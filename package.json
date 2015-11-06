@@ -17,7 +17,8 @@
   },
   "scripts": {
     "start": "node ./http/server.js",
-    "builddb": "node ./builddb/index.js"
+    "builddb": "node ./builddb/index.js",
+    "dumpdb": "node ./db/dumpdb.js village"
   },
   "author": "Herry",
   "license": "ISC"

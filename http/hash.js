@@ -1,2 +1,0 @@
-var geohash = require('ngeohash');
-
