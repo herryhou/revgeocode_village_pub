@@ -1,7 +1,21 @@
 'use strict';
 var s2 = require('s2'),
+    villageUTF8 = require('../data/villageUTF8.js'),
+    villageBig5 = require('../data/village.js'),
     levelup = require('levelup'),
     db_des = levelup(__dirname + '/../db/village');
+
+function getRoadName(road_id){
+    var vName = villageUTF8[road_id];
+    if (typeof vName !== 'undefined') {
+        return vName;
+    }
+    vName = villageBig5[road_id];
+    if (typeof vName !== 'undefined') {
+        return vName;
+    }
+    return '未命名';
+}
 
 function setup_callback(maxCount, cb, startTime) {
     var count = 0;
@@ -14,7 +28,7 @@ function setup_callback(maxCount, cb, startTime) {
             //console.log(count + 'db_des.get('+key+') data:' + data);
             var _values = data.split(',');
             var _token = _values[0];
-            var _rName = _values[1];
+            var _rName = getRoadName(_values[1]);
             var _cellid = (new s2.S2CellId()).fromToken(_token);
             var _cell = new s2.S2Cell(_cellid);
             var _geoJson = _cell.toGeoJSON();
@@ -44,7 +58,7 @@ function searchLatLng(latlng, cb) {
     var key = cellid.toString();
     var keys = [];
     for (var i = MAX_LEVEL + 2; i >= MIN_LEVEL + 2; i--) {
-        keys.push(key.substr(0, i));
+        keys.push(key.substr(0, i).substr(4));
     }
     //console.log(keys.join(','));
     var db_cb = setup_callback(keys.length, cb, t1);

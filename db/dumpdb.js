@@ -4,12 +4,13 @@ var levelup = require('levelup');
 var ops = {};
 var dbName = __dirname + '/village';
 
+/*
 if (process.argv.length <= 2) {
     console.log('Usage: dumpdb DB_name [search string]');
     console.log('EX: dumpdb village 1/220313112012332');
     process.exit();
 }
-
+*/
 
 if (process.argv.length > 2) {
     var dbName = __dirname + '/' + process.argv[2];

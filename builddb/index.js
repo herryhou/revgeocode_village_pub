@@ -2,8 +2,8 @@
 var shapefile = require('shapefile-stream'),
     through = require('through2'),
     //iconv = require('iconv-lite'),
-    villageUTF8 = require('./data/villageUTF8.js'),
-    villageBig5 = require('./data/village.js'),
+    villageUTF8 = require('../data/villageUTF8.js'),
+    villageBig5 = require('../data/village.js'),
     geojsonCover = require('geojson-cover'),
     s2 = require('s2'),
     levelup = require('levelup');
@@ -48,7 +48,8 @@ shapefile.createReadStream(__dirname + '/data/Village_NLSC/Village_NLSC_1040901.
     var cellTokens = geojsonCover.geometryIndexes(data.geometry, cover_options);
     cellTokens.forEach(function(token) {
         var cellid = (new s2.S2CellId()).fromToken(token);
-        db.put(cellid.toString(), [token, vName]);
+        //db.put(cellid.toString(), [token, vName]);
+        db.put(cellid.toString().substr(4), [token, data.properties.VILLAGE_ID]);
     });
     console.log('//--' + vName);
     /*
