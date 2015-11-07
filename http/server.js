@@ -1,11 +1,11 @@
 var express = require('express');
-var queryByHash = require('./queryDB.js');
+var village = require('./queryVillage.js');
 var app = express();
 
 app.use('/map', express.static(__dirname + '/web'));
 
 app.get('/village/:lat,:lng', function(req, res) {
-	queryByHash.searchLatLng([req.params.lat*1,req.params.lng*1], function(err, value) {
+	village.searchLatLng([req.params.lat*1,req.params.lng*1], function(err, value) {
 		res.set('elapsed', value.elapsed + 'ms')
 		res.json({data:value.data});
 	});
