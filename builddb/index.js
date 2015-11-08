@@ -9,12 +9,12 @@ var shapefile = require('shapefile-stream'),
     levelup = require('levelup');
 var db = levelup(__dirname + '/../db/village');
 var cover_options = {
-    query_min_level: 10,
-    index_min_level: 10,
+    query_min_level: 16,
+    index_min_level: 16,
     query_max_level: 20,
     index_max_level: 20,
-    max_query_cells: 1000,
-    max_index_cells: 1000
+    max_query_cells: 4000,
+    max_index_cells: 4000
 };
 shapefile.createReadStream(__dirname + '/data/Village_NLSC/Village_NLSC_1040901.shp').pipe(through.obj(function(data, enc, next) {
     var vName = '未命名',
@@ -51,7 +51,7 @@ shapefile.createReadStream(__dirname + '/data/Village_NLSC/Village_NLSC_1040901.
         //db.put(cellid.toString(), [token, vName]);
         db.put(cellid.toString().substr(4), [token, data.properties.VILLAGE_ID]);
     });
-    console.log('//--' + vName);
+    console.log('//--' + vName + ' total: '+cellTokens.length);
     /*
     geojsons = geojsonCover.geometryGeoJSON(data.geometry, cover_options);
     console.log('drawS2geoJson(' + JSON.stringify(data.geometry) + ')');

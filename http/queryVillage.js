@@ -51,7 +51,7 @@ function setup_callback(maxCount, cb, startTime) {
 }
 
 function searchLatLng(latlng, cb) {
-    var MIN_LEVEL= 10;
+    var MIN_LEVEL= 16;
     var MAX_LEVEL= 20;
     var t1 = Date.now();
     var cellid = new s2.S2CellId(new s2.S2LatLng(latlng[0] * 1.0, latlng[1] * 1.0));
