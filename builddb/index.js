@@ -9,12 +9,12 @@ var shapefile = require('shapefile-stream'),
     levelup = require('levelup');
 var db = levelup(__dirname + '/../db/village');
 var cover_options = {
-    query_min_level: 16,
-    index_min_level: 16,
+    query_min_level: 11,
+    index_min_level: 11,
     query_max_level: 20,
     index_max_level: 20,
-    max_query_cells: 4000,
-    max_index_cells: 4000
+    max_query_cells: 5000,
+    max_index_cells: 5000
 };
 shapefile.createReadStream(__dirname + '/data/Village_NLSC/Village_NLSC_1040901.shp').pipe(through.obj(function(data, enc, next) {
     var vName = '未命名',
@@ -35,6 +35,9 @@ shapefile.createReadStream(__dirname + '/data/Village_NLSC/Village_NLSC_1040901.
     //6703700-007 臺南市,中西區,郡王里
     //6401200-042 高雄市,鳳山區,興仁里
     //高雄市,前鎮區,忠誠里
+    //面積超大的里
+    //'6403700-008':['高雄市','桃源區','梅山里'],
+    //'1001511-002':['花蓮縣','秀林鄉','富世村'],
     /*
     if (data.properties.VILLAGE_ID !== '6600700-005' &&
         data.properties.VILLAGE_ID !== '6500100-092' &&
@@ -51,11 +54,12 @@ shapefile.createReadStream(__dirname + '/data/Village_NLSC/Village_NLSC_1040901.
         //db.put(cellid.toString(), [token, vName]);
         db.put(cellid.toString().substr(4), [token, data.properties.VILLAGE_ID]);
     });
+    db.put('v'+vName, cellTokens.join(','));
     console.log('//--' + vName + ' total: '+cellTokens.length);
     /*
     geojsons = geojsonCover.geometryGeoJSON(data.geometry, cover_options);
-    console.log('drawS2geoJson(' + JSON.stringify(data.geometry) + ')');
-    console.log('drawS2geoJson(' + JSON.stringify(geojsons) + ')');
+    console.log('drawGeoJson(' + JSON.stringify(data.geometry) + ')');
+    console.log('drawGgeoJson(' + JSON.stringify(geojsons) + ')');
     */
     next();
 }));

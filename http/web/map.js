@@ -34,6 +34,28 @@ function map_init() {
     });
 }
 
+function showCover(vName) {
+    console.log(vName);
+    $.get("/villageName/" + vName.trim(), function(res) {
+        //kkk = res;
+        //var data = res.data;
+        drawGeoJson(res.data);
+        /*
+        data
+        data.forEach(function(value) {
+            if (typeof value['FeatureCollection'] === 'object') {
+                L.geoJson(value['FeatureCollection'], {
+                    opacity: 0.2,
+                    color: "#770077",
+                    weight: 1,
+                    clickable: false
+                }).addTo(map);
+            }
+            console.log(value.key + ',' + value.value);
+        });*/
+    });
+}
+
 function click_village(e) {
     //console.log(e.latlng);
     //var marker = L.marker(e.latlng).addTo(map);
@@ -47,8 +69,8 @@ function click_village(e) {
                     opacity: 0.2,
                     color: "#770077",
                     weight: 1,
-                    clickable: false
-                }).addTo(map);
+                    clickable: true
+                }).bindPopup('<b><a href="#" onclick="showCover(\''+ value.value.join(' ')+'\'); return true;">'+value.value+'</a></b></br>' + value.key).addTo(map);
             }
             console.log(value.key + ',' + value.value);
         });
@@ -104,12 +126,16 @@ function drawRtreeBox(rect) {
 }
 //s2 geoJson
 //{"type":"Polygon","coordinates":[[[[-180,-90],[180,-90],[180,90],[-180,90],[-180,-90]]]]}
-function drawS2geoJson(data) {
+function drawGeoJson(data) {
     //var pts = json.coordinates;
     //drawIOTPolyline(pts.toString());
+    var color = '#' + Math.floor(Math.random() * 255).toString(16) +
+                Math.floor(Math.random() * 255).toString(16) +
+                Math.floor(Math.random() * 255).toString(16);
     L.geoJson(data, {
-        opacity: 0.2,
-        color: "#007877",
+        opacity: 0.4,
+        fillOpacity: 0.3,
+        color: color,
         weight: 1,
         clickable: false
     }).addTo(map);

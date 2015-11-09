@@ -5,7 +5,7 @@ var s2 = require('s2'),
     levelup = require('levelup'),
     db_des = levelup(__dirname + '/../db/village');
 
-function getRoadName(road_id){
+function getRoadName(road_id) {
     var vName = villageUTF8[road_id];
     if (typeof vName !== 'undefined') {
         return vName;
@@ -51,8 +51,8 @@ function setup_callback(maxCount, cb, startTime) {
 }
 
 function searchLatLng(latlng, cb) {
-    var MIN_LEVEL= 16;
-    var MAX_LEVEL= 20;
+    var MIN_LEVEL = 11;
+    var MAX_LEVEL = 20;
     var t1 = Date.now();
     var cellid = new s2.S2CellId(new s2.S2LatLng(latlng[0] * 1.0, latlng[1] * 1.0));
     var key = cellid.toString();
@@ -67,8 +67,30 @@ function searchLatLng(latlng, cb) {
         db_des.get(key, db_cb.bind(null, key));
     });
 }
+
+function showCovers(vName, cb) {
+    var startTime = Date.now();
+    db_des.get('v'+vName, function(err, data) {
+        var res = {
+            'type': 'FeatureCollection',
+            'features': []
+        };
+        var tokens = data.split(',');
+        tokens.forEach(function(_token) {
+            var _cellid = (new s2.S2CellId()).fromToken(_token);
+            var _cell = new s2.S2Cell(_cellid);
+            var _geoJson = _cell.toGeoJSON();
+            res.features.push(_geoJson);
+        });
+        cb(null, {
+            elapsed: Date.now() - startTime,
+            data: res
+        });
+    });
+}
 module.exports = {
-    searchLatLng: searchLatLng
+    searchLatLng: searchLatLng,
+    showCovers: showCovers
 };
 /* inner ring
 臺東縣,太麻里鄉,金崙村
