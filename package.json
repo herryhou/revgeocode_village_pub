@@ -20,6 +20,10 @@
     "builddb": "node ./builddb/index.js",
     "dumpdb": "node ./db/dumpdb.js"
   },
+  "repository" :
+  { "type" : "git",
+    "url" : "https://github.com/npm/npm.git"
+  },
   "author": "Herry",
   "license": "ISC"
 }

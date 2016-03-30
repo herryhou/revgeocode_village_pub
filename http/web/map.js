@@ -32,6 +32,7 @@ function map_init() {
         iconSize: new L.Point(10, 10),
         html: '.'
     });
+    user_layer = L.layerGroup().addTo(map);
 }
 
 function showCover(vName) {
@@ -70,14 +71,80 @@ function click_village(e) {
                     color: "#770077",
                     weight: 1,
                     clickable: true
-                }).bindPopup('<b><a href="#" onclick="showCover(\''+ value.value.join(' ')+'\'); return true;">'+value.value+'</a></b></br>' + value.key).addTo(map);
+                }).bindPopup('<b><a href="#" onclick="showCover(\'' + value.value.join(' ') + '\'); return true;">' + value.value + '</a></b></br>' + value.key).addTo(map);
             }
             console.log(value.key + ',' + value.value);
         });
     });
 }
 
+function route_bestGuessScoring(latlng, box) {
+    var boxHgt = box[3] - box[1];
+    var boxWid = box[2] - box[0];
+    //horizontal
+    if (boxWid > boxHgt) {
+        var h_dis1 = latlng.lng - box[0];
+        var h_dis3 = box[2] - latlng.lng;
+        dis = Math.min(h_dis1, h_dis3);
+        //console.log(box[4].name + ' H:' + h_dis1 + ', ' + h_dis3);
+    } else { //horizontal
+        var h_dis1 = latlng.lat - box[1];
+        var h_dis3 = box[3] - latlng.lat;
+        dis = Math.min(h_dis1, h_dis3);
+        //console.log(box[4].name + ' V:' + h_dis1 + ', ' + h_dis3);
+    }
+    return dis * 100000.0;
+}
+
+function route_bestGuessSort(latlng, res) {
+    var Score;
+    var MaxScore = -1;
+    var MaxScoreName = '';
+    res.forEach(function(box){
+        Score = route_bestGuessScoring(latlng, box);
+        box[4].score = Score;
+        if (Score > MaxScore) {
+            MaxScore = Score;
+            MaxScoreName = box[4].name;
+        }
+    });
+    return MaxScoreName;
+}
+
+function route_draw_box(box) {
+    var bounds = [
+        [box[1], box[0]],
+        [box[3], box[2]]
+    ];
+    var _rect = L.rectangle(bounds, {
+        opacity: 0.2,
+        color: '#ff7800',
+        weight: 1
+    });
+    _rect.roadName = box[4].name;
+    _rect.on('mouseover', function(e) {
+        console.log('Over: ' + e.target.roadName)
+    });
+    user_layer.addLayer(_rect);
+    console.log('option: ' + box[4].name + ', score: ' + box[4].score);
+}
+
+function click_route(e) {
+    //console.log(e.latlng);
+    //var marker = L.marker(e.latlng).addTo(map);
+    var latlng = e.latlng.lat + ',' + e.latlng.lng;
+    $.get("/route/" + latlng, function(res) {
+        kkk = res;
+        var MaxScoreName = route_bestGuessSort(e.latlng, res);
+        res.forEach(function(box) {
+            route_draw_box(box);
+        });
+        console.log('Best guess: ' + MaxScoreName);
+    });
+}
+
 function onMapClick(e) {
+    //click_route(e);
     click_village(e);
 }
 //讀取 IOT(運研所) geo 格式的 PTs(lng,lat,lng,lat....)
@@ -129,9 +196,7 @@ function drawRtreeBox(rect) {
 function drawGeoJson(data) {
     //var pts = json.coordinates;
     //drawIOTPolyline(pts.toString());
-    var color = '#' + Math.floor(Math.random() * 255).toString(16) +
-                Math.floor(Math.random() * 255).toString(16) +
-                Math.floor(Math.random() * 255).toString(16);
+    var color = '#' + Math.floor(Math.random() * 255).toString(16) + Math.floor(Math.random() * 255).toString(16) + Math.floor(Math.random() * 255).toString(16);
     L.geoJson(data, {
         opacity: 0.4,
         fillOpacity: 0.3,
